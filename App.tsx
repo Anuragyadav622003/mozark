@@ -1,38 +1,31 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React from 'react';
+import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+// Navigation entry point
+import RootNavigator from './src/navigation/RootNavigator';
 
-function App() {
+function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
-  );
-}
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
+    /* 1. GestureHandlerRootView: Must be at the very top for animations and touch logic */
+    <GestureHandlerRootView style={styles.container}>
+      
+   
+      <SafeAreaProvider>
+        
+     
+        <StatusBar 
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'} 
+          backgroundColor="transparent" 
+          translucent 
+        />
+        <RootNavigator />
+        
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 
