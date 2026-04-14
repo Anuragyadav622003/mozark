@@ -2,11 +2,8 @@ import type { RouteProp } from '@react-navigation/native';
 import type { OcrImage } from '../features/ocr/types';
 
 export type RootStackParamList = {
-  // ── Tabs ──────────────────────────────────────────────────────────────────
-  MainTabs: undefined;
+  // ── App root ───────────────────────────────────────────────────────────────
   Home: undefined;
-  Profile: undefined;
-  Settings: undefined;
 
   // ── Legacy screens ────────────────────────────────────────────────────────
   TextIdentification: undefined;

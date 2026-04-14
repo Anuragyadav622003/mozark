@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { View, StyleSheet, Animated, Easing, Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Gradients, Colors, FontSize, FontWeight } from '../theme';
 
@@ -74,13 +74,17 @@ const SplashScreen = ({ onFinish }: Props) => {
         {/* Logo mark */}
         <Animated.View style={[styles.logoWrap, { opacity: logoOpacity, transform: [{ scale: logoScale }] }]}>
           <View style={styles.logoBox}>
-            <Text style={styles.logoText}>O</Text>
+            <Image
+              source={require('../../android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
           </View>
         </Animated.View>
 
         {/* App name */}
         <Animated.Text style={[styles.appName, { opacity: logoOpacity }]}>
-          Optics
+          QuickTest
         </Animated.Text>
 
         {/* Accent line */}
@@ -121,11 +125,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoText: {
-    fontSize: 44,
-    fontWeight: FontWeight.black,
-    color: Colors.white,
-    lineHeight: 52,
+  logoImage: {
+    width: 54,
+    height: 54,
   },
   appName: {
     fontSize: FontSize['7xl'],

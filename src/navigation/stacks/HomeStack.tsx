@@ -2,9 +2,9 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 import { Colors, FontSize, Shadows } from '../../theme';
-import TabNavigator from '../TabNavigator';
 import BackButton from '../../components/common/BackButton';
 import { CARD_CONFIG } from '../../features/cards/cardConfig';
+import HomeScreen from '../../screens/HomeScreen';
 
 // Legacy screens
 import { OcrScreen, OcrDetailScreen } from '../../features/ocr';
@@ -64,7 +64,7 @@ const cardScreens: CardScreenEntry[] = (Object.entries(CARD_SCREEN_COMPONENTS) a
 
 const HomeStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="MainTabs" component={TabNavigator} />
+    <Stack.Screen name="Home" component={HomeScreen} />
 
     {/* Legacy */}
     <Stack.Screen name="TextIdentification" component={OcrScreen}        options={{ ...H, title: 'Text Identification' }} />
