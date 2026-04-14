@@ -1,5 +1,5 @@
 /**
- * cardConfig — single source of truth for all 15 home screen cards.
+ * cardConfig — single source of truth for home screen cards.
  * HomeScreen renders from this config — no hardcoded card data in UI.
  */
 import type { RootStackParamList } from '../../navigation/types';
@@ -31,4 +31,10 @@ export const CARD_CONFIG: CardConfig[] = [
   { id: 'c13', num: 13, title: 'Resolution / Scaling',      subtitle: 'Different sizes, pixel density issues',     color: '#fbc2eb', screen: 'Card13_S1' },
   { id: 'c14', num: 14, title: 'Misleading UI',             subtitle: 'Fake buttons — find the real one',          color: '#ff9a9e', screen: 'Card14_S1' },
   { id: 'c15', num: 15, title: 'Lag / Performance',         subtitle: 'Delayed render, slow response, lag spikes', color: '#a1c4fd', screen: 'Card15_S1' },
+  { id: 'c16', num: 16, title: 'OCR Calibration',           subtitle: 'Fonts, sizes, weights, blur & contrast',    color: '#7f8cff', screen: 'Card16_S1' },
+  { id: 'c17', num: 17, title: 'Index Precision',           subtitle: 'Same text buttons, specific instance tap',   color: '#5dc7a1', screen: 'Card17_S1' },
+  { id: 'c18', num: 18, title: 'AOI Focus Test',            subtitle: 'Detect target only inside AOI bounds',      color: '#f7a35c', screen: 'Card18_S1' },
+  { id: 'c19', num: 19, title: 'Combined Scroll',           subtitle: 'Vertical + horizontal gesture handling',     color: '#7d89ff', screen: 'Card19_S1' },
+  { id: 'c20', num: 20, title: 'DRM Restricted UI',         subtitle: 'Masked/blocked interactions and overlays',   color: '#8892a0', screen: 'Card20_S1' },
+  { id: 'c21', num: 21, title: 'Input Variations',          subtitle: 'All input modes with validation checks',     color: '#a877f0', screen: 'Card21_S1' },
 ];

@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Gradients, Colors, FontSize, FontWeight } from '../theme';
-
-const { width } = Dimensions.get('window');
 
 type Props = {
   onFinish: () => void;
@@ -58,7 +56,7 @@ const SplashScreen = ({ onFinish }: Props) => {
         useNativeDriver: true,
       }),
     ]).start(() => onFinish());
-  }, []);
+  }, [lineWidth, logoOpacity, logoScale, onFinish, screenOpacity, textOpacity]);
 
   const lineScaleX = lineWidth.interpolate({
     inputRange: [0, 1],

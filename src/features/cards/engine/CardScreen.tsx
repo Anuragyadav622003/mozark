@@ -17,6 +17,8 @@ import {
   RenderValidationList, RenderInfiniteList, RenderEditableList,
   RenderScaledImages, RenderMultiLang, RenderFlicker,
   RenderRandomLayout, RenderMisleadingButtons, RenderLagButton,
+  RenderOcrCalibration, RenderAoiFocus, RenderCombinedScroll,
+  RenderDrmSimulation, RenderInputVariations,
 } from './renderers';
 
 // ─── Content dispatcher ───────────────────────────────────────────────────────
@@ -34,6 +36,11 @@ const Content = ({ cfg }: { cfg: ContentConfig }) => {
     case 'random_layout':     return <RenderRandomLayout cfg={cfg} />;
     case 'misleading_buttons':return <RenderMisleadingButtons cfg={cfg} />;
     case 'lag_button':        return <RenderLagButton cfg={cfg} />;
+    case 'ocr_calibration':   return <RenderOcrCalibration cfg={cfg} />;
+    case 'aoi_focus':         return <RenderAoiFocus cfg={cfg} />;
+    case 'combined_scroll':   return <RenderCombinedScroll cfg={cfg} />;
+    case 'drm_simulation':    return <RenderDrmSimulation cfg={cfg} />;
+    case 'input_variations':  return <RenderInputVariations cfg={cfg} />;
     default:                  return null;
   }
 };

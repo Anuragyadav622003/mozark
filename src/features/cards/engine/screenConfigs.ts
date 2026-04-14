@@ -299,3 +299,136 @@ export const card15_s2: ScreenConfig = {
     { label: 'Random Lag', content: { type: 'lag_button', label: 'Trigger Random Lag', lagMs: 'random', testID: 'c15-lag-btn' } },
   ],
 };
+
+// ─── Card 16 — OCR Calibration ────────────────────────────────────────────────
+export const card16_s1: ScreenConfig = {
+  heading: 'OCR Calibration',
+  hint: 'Find and tap the correct CONFIRM variant.',
+  sections: [
+    {
+      label: 'Font + Size + Weight + Kerning',
+      content: {
+        type: 'ocr_calibration',
+        label: 'CONFIRM',
+        testIDPrefix: 'c16-s1',
+        onCorrect: 'Card16_S2',
+        variants: [
+          { id: 'v1', fontFamily: 'serif', fontSize: 14, fontWeight: '400', letterSpacing: 0.2, offsetY: 0 },
+          { id: 'v2', fontSize: 22, fontWeight: '800', letterSpacing: 3, offsetY: -2 },
+          { id: 'v3', fontSize: 18, fontWeight: '300', letterSpacing: -0.3, offsetY: 3 },
+          { id: 'v4', fontSize: 20, fontWeight: '700', letterSpacing: 1.5, offsetY: 0, correct: true },
+          { id: 'v5', fontFamily: 'sans-serif-condensed', fontSize: 24, fontWeight: '500', letterSpacing: 2.2, offsetY: 2 },
+          { id: 'v6', fontSize: 12, fontWeight: '700', letterSpacing: 0.6, offsetY: -3 },
+        ],
+      },
+    },
+  ],
+};
+
+export const card16_s2: ScreenConfig = {
+  heading: 'Calibration Under Blur & Contrast Shift',
+  hint: 'Same label with blur-like and low-contrast variants.',
+  sections: [
+    {
+      label: 'Blur + Lighting Simulation',
+      content: {
+        type: 'ocr_calibration',
+        label: 'CONFIRM',
+        testIDPrefix: 'c16-s2',
+        onCorrect: 'Card16_S2',
+        variants: [
+          { id: 'b1', fontSize: 20, fontWeight: '700', lowContrast: true, blur: true, correct: true },
+          { id: 'b2', fontSize: 18, fontWeight: '400', lowContrast: true },
+          { id: 'b3', fontSize: 22, fontWeight: '700', blur: true },
+          { id: 'b4', fontSize: 16, fontWeight: '500', lowContrast: true, blur: true },
+        ],
+      },
+    },
+  ],
+};
+
+// ─── Card 17 — Same Text Multiple Buttons ────────────────────────────────────
+export const card17_s1: ScreenConfig = {
+  heading: 'Same Text, Multiple Buttons',
+  hint: 'Tap the 3rd NEXT button (index 3).',
+  sections: [
+    { label: 'Precision Selection', content: { type: 'tap_target', label: 'NEXT', count: 10, correctIndex: 2, testIDPrefix: 'c17-s1-next', onCorrect: 'Card17_S2', wrongMessage: 'Not this one. Select the 3rd NEXT.' } },
+  ],
+};
+
+export const card17_s2: ScreenConfig = {
+  heading: 'Shuffled Layout Precision',
+  hint: 'Layout changed. Tap the 7th NEXT button.',
+  sections: [
+    { label: 'Shuffled Buttons', content: { type: 'tap_target', label: 'NEXT', count: 10, correctIndex: 6, testIDPrefix: 'c17-s2-next', onCorrect: 'Card17_S2', wrongMessage: 'Incorrect index after shuffle.' } },
+  ],
+};
+
+// ─── Card 18 — Area of Interest Focus ────────────────────────────────────────
+export const card18_s1: ScreenConfig = {
+  heading: 'AOI Focus Test',
+  hint: 'Tap the TARGET only inside AOI.',
+  sections: [
+    { label: 'AOI Region', content: { type: 'aoi_focus', label: 'TARGET', testIDPrefix: 'c18-s1', total: 9, targetIndex: 4, aoi: { x: 98, y: 88, width: 92, height: 64 }, onCorrect: 'Card18_S2' } },
+  ],
+};
+
+export const card18_s2: ScreenConfig = {
+  heading: 'Shifted AOI Region',
+  hint: 'AOI is smaller and moved.',
+  sections: [
+    { label: 'Shifted AOI', content: { type: 'aoi_focus', label: 'TARGET', testIDPrefix: 'c18-s2', total: 9, targetIndex: 8, aoi: { x: 194, y: 164, width: 82, height: 56 }, onCorrect: 'Card18_S2' } },
+  ],
+};
+
+// ─── Card 19 — Partial Scroll Combined ───────────────────────────────────────
+export const card19_s1: ScreenConfig = {
+  heading: 'Vertical + Horizontal Combined Scroll',
+  hint: 'Scroll vertically, then swipe horizontally in carousels.',
+  sections: [
+    { label: 'Mixed Scroll Areas', content: { type: 'combined_scroll', testIDPrefix: 'c19-s1', verticalSections: 4, carouselSize: 8, onDone: 'Card19_S2' } },
+  ],
+};
+
+export const card19_s2: ScreenConfig = {
+  heading: 'Dense Mixed Gesture Layout',
+  hint: 'More items in both directions.',
+  sections: [
+    { label: 'Advanced Gesture Mix', content: { type: 'combined_scroll', testIDPrefix: 'c19-s2', verticalSections: 5, carouselSize: 10 } },
+  ],
+};
+
+// ─── Card 20 — DRM / Restricted Screen ───────────────────────────────────────
+export const card20_s1: ScreenConfig = {
+  heading: 'DRM / Restricted Simulation',
+  hint: 'Some visible elements are not interactable.',
+  sections: [
+    { label: 'Restricted Elements', content: { type: 'drm_simulation', testIDPrefix: 'c20-s1', revealDelayMs: 3000, onOverlayGone: 'Card20_S2' } },
+  ],
+};
+
+export const card20_s2: ScreenConfig = {
+  heading: 'Overlay Cleared',
+  hint: 'Overlay disappeared after delay. Re-test accessibility.',
+  sections: [
+    { label: 'Post-Overlay State', content: { type: 'drm_simulation', testIDPrefix: 'c20-s2', revealDelayMs: 1500 } },
+  ],
+};
+
+// ─── Card 21 — Input Variations ──────────────────────────────────────────────
+export const card21_s1: ScreenConfig = {
+  heading: 'Input Box Variations',
+  hint: 'Fill standard, keyboard, numeric and auto-format fields.',
+  sections: [
+    { label: 'Input Mechanisms', content: { type: 'input_variations', testIDPrefix: 'c21-s1' } },
+  ],
+  cta: { label: 'Run Validation →', testID: 'c21-s1-next', route: 'Card21_S2' },
+};
+
+export const card21_s2: ScreenConfig = {
+  heading: 'Input Validation States',
+  hint: 'Validation errors appear for wrong types/format.',
+  sections: [
+    { label: 'Validation Pass/Fail', content: { type: 'input_variations', testIDPrefix: 'c21-s2', validate: true } },
+  ],
+};

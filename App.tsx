@@ -16,8 +16,8 @@ function App(): React.JSX.Element {
     <GestureHandlerRootView style={styles.container}>
       <SafeAreaProvider>
         <StatusBar barStyle="dark-content" backgroundColor={Colors.background} translucent={false} />
-        {splashDone && <RootNavigator />}
-        {!splashDone && <SplashScreen onFinish={handleSplashFinish} />}
+        <RootNavigator />
+        {!splashDone ? <SplashScreen onFinish={handleSplashFinish} /> : null}
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

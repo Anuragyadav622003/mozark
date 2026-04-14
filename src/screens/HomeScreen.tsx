@@ -33,7 +33,7 @@ const HomeScreen = memo(() => {
     <SafeAreaView style={s.container}>
       <View style={s.header}>
         <Text style={s.appTitle}>Optics Super App</Text>
-        <Text style={s.appSub}>15 automation testing scenarios</Text>
+        <Text style={s.appSub}>{`${CARD_CONFIG.length} automation testing scenarios`}</Text>
       </View>
       <FlatList
         data={CARD_CONFIG}

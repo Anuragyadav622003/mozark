@@ -77,6 +77,30 @@ export type RootStackParamList = {
   // ── Card 15 — Lag / Performance ───────────────────────────────────────────
   Card15_S1: undefined;
   Card15_S2: undefined;
+
+  // ── Card 16 — OCR Calibration ─────────────────────────────────────────────
+  Card16_S1: undefined;
+  Card16_S2: undefined;
+
+  // ── Card 17 — Same Text, Multiple Buttons ────────────────────────────────
+  Card17_S1: undefined;
+  Card17_S2: undefined;
+
+  // ── Card 18 — AOI Focus ──────────────────────────────────────────────────
+  Card18_S1: undefined;
+  Card18_S2: undefined;
+
+  // ── Card 19 — Combined Scroll Directions ─────────────────────────────────
+  Card19_S1: undefined;
+  Card19_S2: undefined;
+
+  // ── Card 20 — DRM / Restricted Simulation ────────────────────────────────
+  Card20_S1: undefined;
+  Card20_S2: undefined;
+
+  // ── Card 21 — Input Variations ───────────────────────────────────────────
+  Card21_S1: undefined;
+  Card21_S2: undefined;
 };
 
 // ── Route prop helpers ────────────────────────────────────────────────────────

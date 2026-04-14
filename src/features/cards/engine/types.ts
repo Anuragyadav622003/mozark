@@ -101,6 +101,60 @@ export type LagButtonConfig = {
   onSuccess?: string;
 };
 
+export type OcrCalibrationConfig = {
+  type: 'ocr_calibration';
+  label: string;
+  variants: Array<{
+    id: string;
+    fontFamily?: string;
+    fontSize: number;
+    fontWeight?: '300' | '400' | '500' | '700' | '800';
+    letterSpacing?: number;
+    offsetY?: number;
+    lowContrast?: boolean;
+    blur?: boolean;
+    correct?: boolean;
+  }>;
+  testIDPrefix: string;
+  onCorrect: string;
+};
+
+export type AoiFocusConfig = {
+  type: 'aoi_focus';
+  label: string;
+  testIDPrefix: string;
+  targetIndex: number;
+  total: number;
+  aoi: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  onCorrect: string;
+};
+
+export type CombinedScrollConfig = {
+  type: 'combined_scroll';
+  testIDPrefix: string;
+  verticalSections: number;
+  carouselSize: number;
+  onDone?: string;
+};
+
+export type DrmSimulationConfig = {
+  type: 'drm_simulation';
+  testIDPrefix: string;
+  revealDelayMs: number;
+  onOverlayGone?: string;
+};
+
+export type InputVariationsConfig = {
+  type: 'input_variations';
+  testIDPrefix: string;
+  validate?: boolean;
+};
+
 export type SectionConfig = {
   label: string;
   content: ContentConfig;
@@ -118,7 +172,12 @@ export type ContentConfig =
   | FlickerConfig
   | RandomLayoutConfig
   | MisleadingButtonsConfig
-  | LagButtonConfig;
+  | LagButtonConfig
+  | OcrCalibrationConfig
+  | AoiFocusConfig
+  | CombinedScrollConfig
+  | DrmSimulationConfig
+  | InputVariationsConfig;
 
 export type ScreenConfig = {
   heading: string;

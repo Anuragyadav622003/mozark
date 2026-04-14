@@ -3,10 +3,10 @@
  * Each function renders one ContentConfig type.
  * CardScreen calls the right renderer based on config.type.
  */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, Alert,
-  FlatList, ActivityIndicator, TextInput, Animated,
+  FlatList, ActivityIndicator, TextInput, ScrollView, Keyboard,
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../../navigation/types';
@@ -17,6 +17,8 @@ import type {
   ValidationListConfig, InfiniteListConfig, EditableListConfig,
   ScaledImagesConfig, MultiLangConfig, FlickerConfig,
   RandomLayoutConfig, MisleadingButtonsConfig, LagButtonConfig,
+  OcrCalibrationConfig, AoiFocusConfig, CombinedScrollConfig,
+  DrmSimulationConfig, InputVariationsConfig,
 } from './types';
 
 // ─── Shared nav helper ────────────────────────────────────────────────────────
@@ -71,14 +73,13 @@ export const RenderDelayedReveal = ({ cfg }: { cfg: DelayedRevealConfig }) => {
   const nav = useNav();
   const [visible, setVisible] = useState<Set<string>>(new Set());
   const [tapTriggered, setTapTriggered] = useState<Set<string>>(new Set());
-  const [scrollTriggered] = useState(false); // scroll handled at screen level
 
   useEffect(() => {
     const timers = cfg.items
       .filter(i => i.trigger === 'timer')
       .map(i => setTimeout(() => setVisible(p => new Set([...p, i.id])), i.delayMs ?? 3000));
     return () => timers.forEach(clearTimeout);
-  }, []);
+  }, [cfg.items]);
 
   return (
     <View style={s.revealList}>
@@ -407,6 +408,237 @@ export const RenderLagButton = ({ cfg }: { cfg: LagButtonConfig }) => {
   );
 };
 
+// ─── OCR Calibration ───────────────────────────────────────────────────────────
+export const RenderOcrCalibration = ({ cfg }: { cfg: OcrCalibrationConfig }) => {
+  const nav = useNav();
+
+  const handlePress = (isCorrect: boolean) => {
+    if (isCorrect) {
+      nav.navigate(cfg.onCorrect as never);
+      return;
+    }
+    Alert.alert('Wrong target', 'Pick the specific CONFIRM variant requested.');
+  };
+
+  return (
+    <View style={s.calibrationGrid}>
+      {cfg.variants.map((variant, index) => (
+        <TouchableOpacity
+          key={variant.id}
+          testID={`${cfg.testIDPrefix}-${index}`}
+          style={[s.calibrationBtn, variant.lowContrast && s.calibrationLowContrast, { top: variant.offsetY ?? 0 }]}
+          onPress={() => handlePress(Boolean(variant.correct))}
+        >
+          <Text
+            style={[
+              s.calibrationText,
+              {
+                fontFamily: variant.fontFamily,
+                fontSize: variant.fontSize,
+                fontWeight: variant.fontWeight ?? '600',
+                letterSpacing: variant.letterSpacing ?? 0,
+                color: variant.lowContrast ? '#9ea3ad' : Colors.textPrimary,
+              },
+              variant.blur && s.calibrationBlur,
+            ]}
+          >
+            {cfg.label}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
+
+// ─── AOI Focus ────────────────────────────────────────────────────────────────
+export const RenderAoiFocus = ({ cfg }: { cfg: AoiFocusConfig }) => {
+  const nav = useNav();
+  const [selected, setSelected] = useState<number | null>(null);
+
+  const onPress = (index: number) => {
+    setSelected(index);
+    if (index === cfg.targetIndex) {
+      nav.navigate(cfg.onCorrect as never);
+    } else {
+      Alert.alert('Outside AOI', 'Detect and tap only within the AOI box.');
+    }
+  };
+
+  return (
+    <View>
+      <View style={s.aoiCanvas}>
+        {Array.from({ length: cfg.total }, (_, i) => (
+          <TouchableOpacity
+            key={i}
+            testID={`${cfg.testIDPrefix}-${i}`}
+            style={[
+              s.aoiTarget,
+              { left: 12 + (i % 3) * 96, top: 12 + Math.floor(i / 3) * 76 },
+              selected === i && s.aoiTargetActive,
+            ]}
+            onPress={() => onPress(i)}
+          >
+            <Text style={s.aoiTargetText}>{cfg.label}</Text>
+          </TouchableOpacity>
+        ))}
+        <View
+          pointerEvents="none"
+          style={[
+            s.aoiBox,
+            {
+              left: cfg.aoi.x,
+              top: cfg.aoi.y,
+              width: cfg.aoi.width,
+              height: cfg.aoi.height,
+            },
+          ]}
+        />
+      </View>
+      <Text style={s.aoiHint}>Tap the instance inside highlighted AOI only.</Text>
+    </View>
+  );
+};
+
+// ─── Combined Vertical + Horizontal Scroll ───────────────────────────────────
+export const RenderCombinedScroll = ({ cfg }: { cfg: CombinedScrollConfig }) => {
+  const nav = useNav();
+  const [done, setDone] = useState(false);
+
+  return (
+    <ScrollView style={s.combinedWrap} nestedScrollEnabled>
+      {Array.from({ length: cfg.verticalSections }, (_sectionPos, sectionIndex) => (
+        <View key={sectionIndex} style={s.combinedSection}>
+          <Text style={s.combinedSectionTitle}>Vertical Section {sectionIndex + 1}</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.carousel}>
+            {Array.from({ length: cfg.carouselSize }, (_itemPos, itemIndex) => {
+              const isTarget = sectionIndex === cfg.verticalSections - 1 && itemIndex === cfg.carouselSize - 1;
+              return (
+                <TouchableOpacity
+                  key={`${sectionIndex}-${itemIndex}`}
+                  testID={`${cfg.testIDPrefix}-${sectionIndex}-${itemIndex}`}
+                  style={[s.carouselCard, isTarget && s.carouselTarget]}
+                  onPress={() => {
+                    if (isTarget) {
+                      setDone(true);
+                      if (cfg.onDone) nav.navigate(cfg.onDone as never);
+                    }
+                  }}
+                >
+                  <Text style={s.carouselText}>{isTarget ? 'Target' : `Item ${itemIndex + 1}`}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      ))}
+      {done ? <Text style={s.combinedDone}>Gesture sequence complete.</Text> : null}
+    </ScrollView>
+  );
+};
+
+// ─── DRM / Restricted Simulation ─────────────────────────────────────────────
+export const RenderDrmSimulation = ({ cfg }: { cfg: DrmSimulationConfig }) => {
+  const nav = useNav();
+  const [overlayVisible, setOverlayVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setOverlayVisible(false);
+      if (cfg.onOverlayGone) {
+        nav.navigate(cfg.onOverlayGone as never);
+      }
+    }, cfg.revealDelayMs);
+    return () => clearTimeout(timer);
+  }, [cfg.onOverlayGone, cfg.revealDelayMs, nav]);
+
+  return (
+    <View style={s.drmWrap}>
+      <TouchableOpacity testID={`${cfg.testIDPrefix}-visible-disabled`} style={s.drmBtnDisabled} disabled>
+        <Text style={s.drmBtnText}>Visible but disabled</Text>
+      </TouchableOpacity>
+      <TouchableOpacity testID={`${cfg.testIDPrefix}-masked`} style={s.drmBtnMasked} onPress={() => Alert.alert('Masked', 'Element is partially blocked.')}>
+        <Text style={s.drmBtnText}>Partially masked element</Text>
+      </TouchableOpacity>
+      {overlayVisible ? <View pointerEvents="auto" style={s.drmOverlay}><Text style={s.drmOverlayText}>Security overlay active</Text></View> : null}
+    </View>
+  );
+};
+
+// ─── Input Variations ─────────────────────────────────────────────────────────
+export const RenderInputVariations = ({ cfg }: { cfg: InputVariationsConfig }) => {
+  const [standard, setStandard] = useState('');
+  const [direct, setDirect] = useState('');
+  const [numeric, setNumeric] = useState('');
+  const [phone, setPhone] = useState('');
+  const [errors, setErrors] = useState<string[]>([]);
+
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 10);
+    const p1 = digits.slice(0, 3);
+    const p2 = digits.slice(3, 6);
+    const p3 = digits.slice(6, 10);
+    if (digits.length <= 3) return p1;
+    if (digits.length <= 6) return `${p1}-${p2}`;
+    return `${p1}-${p2}-${p3}`;
+  };
+
+  const runValidation = () => {
+    if (!cfg.validate) return;
+    const nextErrors: string[] = [];
+    if (!standard.trim()) nextErrors.push('Standard input is required.');
+    if (!direct.trim()) nextErrors.push('Keyboard interaction field is required.');
+    if (!/^\d+$/.test(numeric)) nextErrors.push('Numeric field accepts digits only.');
+    if (phone.replace(/\D/g, '').length !== 10) nextErrors.push('Phone must be 10 digits.');
+    setErrors(nextErrors);
+    if (nextErrors.length === 0) Alert.alert('Valid', 'All input mechanisms passed.');
+  };
+
+  return (
+    <View style={s.inputWrap}>
+      <TextInput
+        testID={`${cfg.testIDPrefix}-standard`}
+        value={standard}
+        onChangeText={setStandard}
+        style={s.inputField}
+        placeholder="Standard input"
+      />
+      <TextInput
+        testID={`${cfg.testIDPrefix}-keyboard`}
+        value={direct}
+        onChangeText={setDirect}
+        style={s.inputField}
+        placeholder="Requires keyboard interaction"
+        returnKeyType="done"
+        onSubmitEditing={() => Keyboard.dismiss()}
+      />
+      <TextInput
+        testID={`${cfg.testIDPrefix}-numeric`}
+        value={numeric}
+        onChangeText={(v) => setNumeric(v.replace(/\D/g, ''))}
+        style={s.inputField}
+        placeholder="Numeric-only field"
+        keyboardType="number-pad"
+      />
+      <TextInput
+        testID={`${cfg.testIDPrefix}-phone`}
+        value={phone}
+        onChangeText={(v) => setPhone(formatPhone(v))}
+        style={s.inputField}
+        placeholder="Auto-format phone"
+        keyboardType="phone-pad"
+      />
+      {cfg.validate ? (
+        <TouchableOpacity testID={`${cfg.testIDPrefix}-validate`} style={s.inputValidateBtn} onPress={runValidation}>
+          <Text style={s.inputValidateText}>Validate Inputs</Text>
+        </TouchableOpacity>
+      ) : null}
+      {errors.map((err, i) => (
+        <Text key={`${err}-${i}`} style={s.inputError}>{err}</Text>
+      ))}
+    </View>
+  );
+};
+
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
   // TextBlock
@@ -500,4 +732,44 @@ const s = StyleSheet.create({
   lagBtnDisabled:{ opacity: 0.7 },
   lagBtnText:    { color: Colors.white, fontWeight: FontWeight.bold, fontSize: FontSize.lg },
   lagLog:        { fontSize: FontSize.sm, color: Colors.textSecondary, marginTop: Spacing.xs },
+
+  // OCR Calibration
+  calibrationGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
+  calibrationBtn: { width: '47%', minHeight: 58, backgroundColor: Colors.backgroundCard, borderRadius: Radius.md, borderWidth: 1, borderColor: Colors.border, alignItems: 'center', justifyContent: 'center', padding: Spacing.sm, position: 'relative' },
+  calibrationLowContrast: { backgroundColor: '#eceef2' },
+  calibrationText: { color: Colors.textPrimary, textTransform: 'uppercase' },
+  calibrationBlur: { textShadowColor: 'rgba(0,0,0,0.15)', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 2 },
+
+  // AOI Focus
+  aoiCanvas: { height: 250, backgroundColor: Colors.backgroundCard, borderRadius: Radius.lg, borderWidth: 1, borderColor: Colors.border, position: 'relative' },
+  aoiTarget: { position: 'absolute', width: 84, height: 46, borderRadius: Radius.md, backgroundColor: '#e6e9f2', alignItems: 'center', justifyContent: 'center' },
+  aoiTargetActive: { borderWidth: 2, borderColor: Colors.primary },
+  aoiTargetText: { color: Colors.textPrimary, fontSize: FontSize.sm, fontWeight: FontWeight.bold },
+  aoiBox: { position: 'absolute', borderWidth: 2, borderColor: Colors.success, backgroundColor: 'rgba(72,187,120,0.12)', borderRadius: Radius.sm },
+  aoiHint: { marginTop: Spacing.sm, color: Colors.textSecondary, fontSize: FontSize.sm },
+
+  // Combined scroll
+  combinedWrap: { maxHeight: 350 },
+  combinedSection: { marginBottom: Spacing.lg },
+  combinedSectionTitle: { marginBottom: Spacing.sm, color: Colors.textPrimary, fontWeight: FontWeight.bold },
+  carousel: { flexGrow: 0 },
+  carouselCard: { width: 120, height: 80, borderRadius: Radius.md, backgroundColor: Colors.border, marginRight: Spacing.sm, alignItems: 'center', justifyContent: 'center' },
+  carouselTarget: { backgroundColor: Colors.primary },
+  carouselText: { color: Colors.white, fontWeight: FontWeight.bold },
+  combinedDone: { marginTop: Spacing.md, color: Colors.success, fontWeight: FontWeight.semibold },
+
+  // DRM simulation
+  drmWrap: { minHeight: 170, justifyContent: 'center', gap: Spacing.sm, position: 'relative' },
+  drmBtnDisabled: { backgroundColor: Colors.border, borderRadius: Radius.md, padding: Spacing.md, alignItems: 'center' },
+  drmBtnMasked: { backgroundColor: Colors.primaryDark, borderRadius: Radius.md, padding: Spacing.md, alignItems: 'center' },
+  drmBtnText: { color: Colors.white, fontWeight: FontWeight.bold },
+  drmOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(20,20,20,0.45)', borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
+  drmOverlayText: { color: Colors.white, fontWeight: FontWeight.bold },
+
+  // Input variations
+  inputWrap: { gap: Spacing.sm },
+  inputField: { backgroundColor: Colors.backgroundCard, borderWidth: 1, borderColor: Colors.border, borderRadius: Radius.md, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, color: Colors.textPrimary },
+  inputValidateBtn: { marginTop: Spacing.sm, backgroundColor: Colors.primary, borderRadius: Radius.md, padding: Spacing.md, alignItems: 'center' },
+  inputValidateText: { color: Colors.white, fontWeight: FontWeight.bold },
+  inputError: { color: Colors.error, fontSize: FontSize.sm },
 });

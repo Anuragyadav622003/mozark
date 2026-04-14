@@ -88,6 +88,30 @@ export const Card14_S1 = createConfigScreen(cfg.card14_s1);
 export const Card15_S1 = createConfigScreen(cfg.card15_s1);
 export const Card15_S2 = createConfigScreen(cfg.card15_s2);
 
+// ── Card 16 ───────────────────────────────────────────────────────────────────
+export const Card16_S1 = createConfigScreen(cfg.card16_s1);
+export const Card16_S2 = createConfigScreen(cfg.card16_s2);
+
+// ── Card 17 ───────────────────────────────────────────────────────────────────
+export const Card17_S1 = createConfigScreen(cfg.card17_s1);
+export const Card17_S2 = createConfigScreen(cfg.card17_s2);
+
+// ── Card 18 ───────────────────────────────────────────────────────────────────
+export const Card18_S1 = createConfigScreen(cfg.card18_s1);
+export const Card18_S2 = createConfigScreen(cfg.card18_s2);
+
+// ── Card 19 ───────────────────────────────────────────────────────────────────
+export const Card19_S1 = createConfigScreen(cfg.card19_s1);
+export const Card19_S2 = createConfigScreen(cfg.card19_s2);
+
+// ── Card 20 ───────────────────────────────────────────────────────────────────
+export const Card20_S1 = createConfigScreen(cfg.card20_s1);
+export const Card20_S2 = createConfigScreen(cfg.card20_s2);
+
+// ── Card 21 ───────────────────────────────────────────────────────────────────
+export const Card21_S1 = createConfigScreen(cfg.card21_s1);
+export const Card21_S2 = createConfigScreen(cfg.card21_s2);
+
 export const CARD_SCREEN_COMPONENTS = {
   Card1_S1,
   Card1_S2,
@@ -121,4 +145,16 @@ export const CARD_SCREEN_COMPONENTS = {
   Card14_S1,
   Card15_S1,
   Card15_S2,
+  Card16_S1,
+  Card16_S2,
+  Card17_S1,
+  Card17_S2,
+  Card18_S1,
+  Card18_S2,
+  Card19_S1,
+  Card19_S2,
+  Card20_S1,
+  Card20_S2,
+  Card21_S1,
+  Card21_S2,
 } as const;
