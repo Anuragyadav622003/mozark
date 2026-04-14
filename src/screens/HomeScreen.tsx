@@ -1,98 +1,74 @@
-import React, { memo, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { memo } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
-import FeatureCard from '../components/ui/FeatureCard';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/types';
-import { Colors, Gradients, Spacing, FontSize, FontWeight, TextStyles } from '../theme';
+import { CARD_CONFIG, CardConfig, CardEntryRoute } from '../features/cards/cardConfig';
+import { Colors, Spacing, Radius, FontSize, FontWeight, Shadows } from '../theme';
 
-// ─── Static config — move to a constants file if features grow ───────────────
-const FEATURE_CARDS: Array<{
-  id: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  icon: string;
-  gradient: string[];
-  screen: keyof RootStackParamList;
-}> = [
-  {
-    id: 'ocr',
-    title: 'Text Identification',
-    subtitle: 'OCR & Text Recognition',
-    description: 'Tap the invoice image to start a text extraction workflow.',
-    icon: '📝',
-    gradient: Gradients.primary,
-    screen: 'TextIdentification',
-  },
-  {
-    id: 'scroll',
-    title: 'Scroll & Swipe',
-    subtitle: 'List + Interaction Playground',
-    description: 'Explore a scrollable task panel and add new list items on the fly.',
-    icon: '🎯',
-    gradient: Gradients.secondary,
-    screen: 'ScrollSwipe',
-  },
-  {
-    id: 'animation',
-    title: 'Animation Lab',
-    subtitle: 'Loader & Motion Tests',
-    description: 'Inspect polished loading animations inspired by InstaBIZ flows.',
-    icon: '✨',
-    gradient: Gradients.success,
-    screen: 'Animation',
-  },
-];
+const CardRow = memo(({ item, onPress }: { item: CardConfig; onPress: () => void }) => (
+  <TouchableOpacity
+    testID={`home-card-${item.num}`}
+    style={s.card}
+    onPress={onPress}
+    activeOpacity={0.8}
+  >
+    <View style={[s.badge, { backgroundColor: item.color }]}>
+      <Text style={s.badgeNum}>{item.num}</Text>
+    </View>
+    <View style={s.body}>
+      <Text style={s.title}>{item.title}</Text>
+      <Text style={s.sub}>{item.subtitle}</Text>
+    </View>
+    <Text style={[s.arrow, { color: item.color }]}>›</Text>
+  </TouchableOpacity>
+));
 
 const HomeScreen = memo(() => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const navigateToCard = (screen: CardEntryRoute) => navigation.navigate(screen);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-
-        <View style={styles.header}>
-          <Text style={styles.title}>Optics Super App</Text>
-          <Text style={styles.subtitle}>Framework validation & quick interaction tests.</Text>
-        </View>
-
-        <View style={styles.cards}>
-          {FEATURE_CARDS.map(card => (
-            <FeatureCard
-              key={card.id}
-              title={card.title}
-              subtitle={card.subtitle}
-              description={card.description}
-              icon={card.icon}
-              colors={card.gradient}
-              onPress={() => navigation.navigate(card.screen as any)}
-            />
-          ))}
-        </View>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerTitle}>Designed for rapid QA</Text>
-          <Text style={styles.footerText}>
-            Each card launches a complete testing flow with real content and interactive controls.
-          </Text>
-        </View>
-
-      </ScrollView>
+    <SafeAreaView style={s.container}>
+      <View style={s.header}>
+        <Text style={s.appTitle}>Optics Super App</Text>
+        <Text style={s.appSub}>15 automation testing scenarios</Text>
+      </View>
+      <FlatList
+        data={CARD_CONFIG}
+        keyExtractor={i => i.id}
+        renderItem={({ item }) => (
+          <CardRow item={item} onPress={() => navigateToCard(item.screen)} />
+        )}
+        contentContainerStyle={s.list}
+        showsVerticalScrollIndicator={false}
+      />
     </SafeAreaView>
   );
 });
 
-const styles = StyleSheet.create({
+const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  scroll:    { flexGrow: 1, padding: Spacing.lg },
-  header:    { alignItems: 'center', marginBottom: Spacing['2xl'] + 2, marginTop: Spacing.lg },
-  title:     { ...TextStyles.h1, color: Colors.textPrimary, marginBottom: Spacing.sm },
-  subtitle:  { fontSize: FontSize.lg, color: Colors.textSecondary, fontWeight: FontWeight.medium, textAlign: 'center', lineHeight: 22, maxWidth: 320 },
-  cards:     { marginBottom: Spacing.lg },
-  footer:    { marginTop: Spacing['2xl'], alignItems: 'center' },
-  footerTitle: { ...TextStyles.h4, color: Colors.textPrimary, marginBottom: Spacing.sm },
-  footerText:  { fontSize: FontSize.base, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22, maxWidth: 320 },
+  header:    { paddingHorizontal: Spacing.lg, paddingTop: Spacing.base, paddingBottom: Spacing.md },
+  appTitle:  { fontSize: FontSize['7xl'], fontWeight: FontWeight.black, color: Colors.textPrimary },
+  appSub:    { fontSize: FontSize.base, color: Colors.textSecondary, marginTop: Spacing.xs },
+  list:      { paddingHorizontal: Spacing.lg, paddingBottom: Spacing['3xl'] },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: Radius.xl,
+    padding: Spacing.base,
+    marginBottom: Spacing.md,
+    ...Shadows.md,
+  },
+  badge:    { width: 44, height: 44, borderRadius: Radius.lg, justifyContent: 'center', alignItems: 'center', marginRight: Spacing.md },
+  badgeNum: { color: Colors.white, fontWeight: FontWeight.black, fontSize: FontSize.lg },
+  body:     { flex: 1 },
+  title:    { fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.textPrimary, marginBottom: 2 },
+  sub:      { fontSize: FontSize.sm, color: Colors.textSecondary, lineHeight: 18 },
+  arrow:    { fontSize: 28, fontWeight: FontWeight.black, marginLeft: Spacing.sm },
 });
 
 export default HomeScreen;

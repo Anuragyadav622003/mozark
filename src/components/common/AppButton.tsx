@@ -1,11 +1,7 @@
 import React from 'react';
 import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacityProps,
-  ViewStyle,
+  TouchableOpacity, Text, StyleSheet,
+  ActivityIndicator, TouchableOpacityProps, ViewStyle,
 } from 'react-native';
 import { Colors, Spacing, Radius, FontSize, FontWeight, Shadows } from '../../theme';
 
@@ -61,11 +57,10 @@ const AppButton = ({
       disabled={disabled || loading}
       {...props}
     >
-      {loading ? (
-        <ActivityIndicator size="small" color={variant === 'primary' || variant === 'secondary' ? Colors.white : Colors.primary} />
-      ) : (
-        <Text style={[styles.label, v.label]}>{label}</Text>
-      )}
+      {loading
+        ? <ActivityIndicator size="small" color={variant === 'primary' || variant === 'secondary' ? Colors.white : Colors.primary} />
+        : <Text style={[styles.label, v.label]}>{label}</Text>
+      }
     </TouchableOpacity>
   );
 };
@@ -80,16 +75,9 @@ const styles = StyleSheet.create({
     minHeight: 52,
     ...Shadows.sm,
   },
-  fullWidth: {
-    alignSelf: 'stretch',
-  },
-  disabled: {
-    opacity: 0.55,
-  },
-  label: {
-    fontSize: FontSize.lg,
-    fontWeight: FontWeight.bold,
-  },
+  fullWidth: { alignSelf: 'stretch' },
+  disabled:  { opacity: 0.55 },
+  label: { fontSize: FontSize.lg, fontWeight: FontWeight.bold },
 });
 
 export default AppButton;

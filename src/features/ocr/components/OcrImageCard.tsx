@@ -1,62 +1,118 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import {
+  TouchableOpacity,
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
 import type { OcrImage } from '../types';
+import { Colors, Radius, FontSize, FontWeight, Shadows, Spacing } from '../../../theme';
 
-type OcrImageCardProps = {
+const { width } = Dimensions.get('window');
+const CARD_WIDTH = (width - Spacing.lg * 2 - Spacing.md) / 2;
+
+type Props = {
   image: OcrImage;
   onPress: (image: OcrImage) => void;
 };
 
-const OcrImageCard = ({ image, onPress }: OcrImageCardProps) => (
+// Renders text visually styled to simulate a scanned document image
+// with text in different orientations
+const OcrImageCard = ({ image, onPress }: Props) => (
   <TouchableOpacity
-    style={[styles.imageContainer, { backgroundColor: image.backgroundColor }, image.clickable && styles.clickableImage]}
+    style={[styles.card, { backgroundColor: image.backgroundColor }, image.clickable && styles.clickable]}
     onPress={() => onPress(image)}
+    activeOpacity={image.clickable ? 0.75 : 1}
   >
-    <Text style={styles.imageText}>{image.text}</Text>
+    {/* Simulated document header bar */}
+    <View style={[styles.docHeader, { backgroundColor: image.clickable ? Colors.primary : Colors.textSecondary }]}>
+      <Text style={styles.docHeaderText}>{image.title.toUpperCase()}</Text>
+    </View>
+
+    {/* Text content rendered to simulate orientation */}
+    <View style={[styles.textArea, image.orientation === 'vertical' && styles.textAreaVertical]}>
+      {image.lines.map((line, i) => (
+        <Text
+          key={i}
+          style={[
+            styles.docText,
+            image.orientation === 'diagonal' && { transform: [{ rotate: '-15deg' }] },
+            image.orientation === 'vertical' && styles.verticalChar,
+            line.bold && { fontWeight: FontWeight.bold },
+            line.large && { fontSize: FontSize.lg },
+          ]}
+          numberOfLines={image.orientation === 'horizontal' ? 1 : undefined}
+        >
+          {line.text}
+        </Text>
+      ))}
+    </View>
+
+    {/* Clickable badge */}
     {image.clickable && (
-      <Text style={styles.clickableLabel}>TAP TO ANALYZE</Text>
+      <View style={styles.badge}>
+        <Text style={styles.badgeText}>TAP TO ANALYZE →</Text>
+      </View>
     )}
   </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
-  imageContainer: {
-    flex: 1,
-    minWidth: 150,
-    height: 150,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  card: {
+    width: CARD_WIDTH,
+    minHeight: 160,
+    borderRadius: Radius.lg,
+    marginBottom: Spacing.md,
+    overflow: 'hidden',
+    ...Shadows.md,
   },
-  clickableImage: {
+  clickable: {
     borderWidth: 2,
-    borderColor: '#667eea',
+    borderColor: Colors.primary,
   },
-  imageText: {
-    fontSize: 12,
-    color: '#2d3748',
-    textAlign: 'center',
+  docHeader: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+  },
+  docHeaderText: {
+    fontSize: FontSize.xs,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+    letterSpacing: 1,
+  },
+  textArea: {
+    flex: 1,
+    padding: Spacing.sm,
+    justifyContent: 'center',
+  },
+  textAreaVertical: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+  },
+  docText: {
+    fontSize: FontSize.sm,
+    color: Colors.textPrimary,
+    lineHeight: 18,
+    marginBottom: 2,
+  },
+  verticalChar: {
+    fontSize: FontSize.md,
+    marginRight: 1,
     lineHeight: 16,
   },
-  clickableLabel: {
-    marginTop: 10,
-    backgroundColor: 'rgba(102, 126, 234, 0.9)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: '700',
-    textAlign: 'center',
-    overflow: 'hidden',
+  badge: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    alignItems: 'center',
+  },
+  badgeText: {
+    fontSize: FontSize.xs,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+    letterSpacing: 0.5,
   },
 });
 

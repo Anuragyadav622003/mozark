@@ -4,20 +4,17 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-// Project Imports
 import { Colors } from '../theme/colors';
-import HomeScreen from '../screens/HomeScreen';
-import ProfileScreen from '../screens/ProfleScreen';
-import SettingsScreen from '../screens/SettingScreen';
+import { TAB_BAR_LAYOUT, TAB_CONFIG, TabParamList, TabRouteName } from './tabConfig';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<TabParamList>();
 
-// Type-safe Icon Map
-type TabRouteName = 'Home' | 'Profile' | 'Settings';
-const iconMap: Record<TabRouteName, { active: string; inactive: string }> = {
-  Home: { active: 'home', inactive: 'home-outline' },
-  Profile: { active: 'person', inactive: 'person-outline' },
-  Settings: { active: 'settings', inactive: 'settings-outline' },
+const getTabIconName = (routeName: TabRouteName, focused: boolean): string => {
+  const tab = TAB_CONFIG.find((item) => item.name === routeName);
+  if (!tab) {
+    return 'ellipse-outline';
+  }
+  return focused ? tab.icon.active : tab.icon.inactive;
 };
 
 const TabNavigator = () => {
@@ -28,46 +25,44 @@ const TabNavigator = () => {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: '#8E8E93',
-        // Responsive height: base height + safe area bottom inset
+        tabBarInactiveTintColor: Colors.textMuted,
         tabBarStyle: [
           styles.tabBar,
-          { 
-            height: Platform.OS === 'ios' ? 60 + insets.bottom : 70,
-            paddingBottom: Platform.OS === 'ios' ? insets.bottom : 12,
+          {
+            height: Platform.OS === 'ios'
+              ? TAB_BAR_LAYOUT.iosHeight + insets.bottom
+              : TAB_BAR_LAYOUT.androidHeight,
+            paddingBottom: Platform.OS === 'ios' ? insets.bottom : TAB_BAR_LAYOUT.androidBottomPadding,
           }
         ],
         tabBarLabelStyle: styles.label,
         tabBarIcon: ({ focused, color, size }) => {
-          const icons = iconMap[route.name as TabRouteName];
-          const iconName = focused ? icons.active : icons.inactive;
-          
+          const iconName = getTabIconName(route.name, focused);
+
           return (
             <View style={focused ? styles.iconContainer : null}>
-               <Ionicons name={iconName} size={size} color={color} />
+              <Ionicons name={iconName} size={size} color={color} />
             </View>
           );
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      {TAB_CONFIG.map((tab) => (
+        <Tab.Screen key={tab.name} name={tab.name} component={tab.component} />
+      ))}
     </Tab.Navigator>
   );
 };
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#ffffff',
-    position: 'absolute', // Optional: Use absolute if you want a floating effect
+    backgroundColor: Colors.white,
+    position: 'absolute',
     borderTopWidth: 0.5,
-    borderTopColor: '#E5E5E5',
-    
-    // Pro Shadow Handling
+    borderTopColor: Colors.border,
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: Colors.black,
         shadowOffset: { width: 0, height: -4 },
         shadowOpacity: 0.08,
         shadowRadius: 10,
@@ -83,7 +78,6 @@ const styles = StyleSheet.create({
     marginTop: -4,
   },
   iconContainer: {
-    // Adding a subtle top-border or highlight for the active tab
     paddingTop: 4,
   }
 });

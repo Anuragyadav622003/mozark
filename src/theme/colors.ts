@@ -41,14 +41,14 @@ export const palette = {
 // ─── Semantic tokens ──────────────────────────────────────────────────────────
 export const Colors = {
   // Brand
-  primary:   palette.purple500,
+  primary:     palette.purple500,
   primaryDark: palette.purple600,
-  secondary: palette.pink400,
+  secondary:   palette.pink400,
 
   // Backgrounds
-  background:      palette.gray100,
-  backgroundCard:  palette.white,
-  backgroundInput: palette.white,
+  background:         palette.gray100,
+  backgroundCard:     palette.white,
+  backgroundInput:    palette.white,
 
   // Text
   textPrimary:   palette.gray800,
@@ -57,9 +57,9 @@ export const Colors = {
   textInverse:   palette.white,
 
   // Status
-  success: palette.green600,
-  error:   palette.red400,
-  errorBg: palette.red50,
+  success:     palette.green600,
+  error:       palette.red400,
+  errorBg:     palette.red50,
   errorBorder: palette.red200,
 
   // Border
@@ -68,8 +68,8 @@ export const Colors = {
   borderError: palette.red400,
 
   // Misc
-  white: palette.white,
-  black: palette.black,
+  white:   palette.white,
+  black:   palette.black,
   overlay: 'rgba(0,0,0,0.4)',
 } as const;
 
